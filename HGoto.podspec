@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "HGoto"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "A short description of HGoto."
 
   s.description  = <<-DESC
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   
   s.author             = { "zct" => "zhangchutian@camera360.com" }
 
-    s.source       = { :git => "ssh://git@mobiledev.camera360.com:7999/hlib/hgoto.git"}
+    s.source       = { :git => "git@github.com:jumperb/HGoto.git"}
 
   s.source_files  = 'Classes/**/*.{h,m}'
   
