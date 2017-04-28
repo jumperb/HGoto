@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>9E2B2476-495C-4F48-9256-3788F9D6A557</string>
+	<key>IDESourceControlProjectName</key>
+	<string>HGoto</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>771CC4AF900AB90AE04F463BE101C9728F377BAD</key>
+		<string>192.168.1.33:HGoto</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>HGoto.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>771CC4AF900AB90AE04F463BE101C9728F377BAD</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>192.168.1.33:HGoto</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>771CC4AF900AB90AE04F463BE101C9728F377BAD</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>771CC4AF900AB90AE04F463BE101C9728F377BAD</string>
+			<key>IDESourceControlWCCName</key>
+			<string>HGoto</string>
+		</dict>
+	</array>
+</dict>
+</plist>
