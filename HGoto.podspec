@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "HGoto"
-  s.version      = "1.0.2"
+  s.version      = "1.0.3"
   s.summary      = "A short description of HGoto."
 
   s.description  = <<-DESC
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   
   s.author             = { "zct" => "zhangchutian@camera360.com" }
 
-    s.source       = { :git => "git@github.com:jumperb/HGoto.git"}
+    s.source       = { :git => "https://github.com/jumperb/HGoto.git", :tag => s.version.to_s}
 
   s.source_files  = 'Classes/**/*.{h,m}'
   
