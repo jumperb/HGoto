@@ -13,9 +13,9 @@
 
 HGotoReg(@"web")
 
-+ (void)hgoto_url:(NSString *)url externalOpen:(BOOL)externalOpen
++ (void)hgoto_url:(NSString *)url inapp:(BOOL)inapp
 {
-    if (externalOpen)
+    if (!inapp)
     {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url decode]]];
     }

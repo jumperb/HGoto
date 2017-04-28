@@ -12,5 +12,5 @@
  *  打开网页跳
  */
 @interface HGoToWeb : NSObject
-+ (void)hgoto_url:(NSString *)url externalOpen:(BOOL)externalOpen;
++ (void)hgoto_url:(NSString *)url inapp:(BOOL)inapp;
 @end

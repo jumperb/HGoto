@@ -468,6 +468,7 @@
 				GCC_PREFIX_HEADER = HGoto/Prefix.pch;
 				INFOPLIST_FILE = HGoto/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pinguo.inhouse.HGoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -481,6 +482,7 @@
 				GCC_PREFIX_HEADER = HGoto/Prefix.pch;
 				INFOPLIST_FILE = HGoto/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pinguo.inhouse.HGoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
