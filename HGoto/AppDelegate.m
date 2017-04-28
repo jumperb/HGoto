@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "MenuVC.h"
+#import "HCommon.h"
 
 @interface AppDelegate ()
 

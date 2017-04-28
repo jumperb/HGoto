@@ -9,6 +9,8 @@
 #ifndef HGoto_HGoToSupport_h
 #define HGoto_HGoToSupport_h
 
+#import "HCommon.h"
+
 #define HGOTO_NODE_REG_PREFIX @"HGOTO_NODE_REG_PREFIX"
 
 #define HGotoReg(key) HReg(@"HGOTO_NODE_REG_PREFIX_"key) //路由节点注册
