@@ -9,8 +9,10 @@
 * 支持数据暂存，类似剪贴板  
 
 # 使用方法
+例如:你想添加一个对BViewController的跳转，并携带参数，那么设计好的链接如下  
+HGoto://b?pa=1&pb=2&pc=3
 
-1.在podfile中添加 pod 'HGoto'并更新  
+1.在podfile中添加 pod 'HGoto'并更新  
 2.为一个类添加路由节点  
 ```
 @implementation BViewController
