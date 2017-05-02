@@ -9,8 +9,8 @@
 * 支持数据暂存，类似剪贴板  
 
 # 使用方法
-例如:你想添加一个对BViewController的跳转，并携带参数，那么设计好的链接如下  
-HGoto://b?pa=1&pb=2&pc=3
+例如:你想添加一个对BViewController的跳转，并携带参数，那么设计好的链接如下  
+你的schema://b?pa=1&pb=2&pc=3
 
 1.在podfile中添加 pod 'HGoto'并更新  
 2.为一个类添加路由节点  
@@ -46,5 +46,5 @@ HGotoReg(@"b")
 @end
 ```
 
-3.在浏览器地址栏填入HGoto://b?pa=1&pb=2&pc=3试试吧，注意改成你的schema  
+3.在浏览器地址栏填入"你的schema://b?pa=1&pb=2&pc=3"试试吧，注意要确认你的schema在info.plist的url-types里面
 4.其他例子见demo
