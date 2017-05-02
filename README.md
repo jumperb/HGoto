@@ -1,5 +1,5 @@
 # HGoto
-这是一个app内路由小工具，你可以用他来处理来自推送，urlschema，universal url，深链，网页调用，app的消息中心的消息或者调用，还可以用于服务器下发跳转逻辑，例如banner。相比其他同类库，它具有如下特点
+这是一个非常小的app内路由工具，你可以用他来处理来自推送，urlschema，universal url，深链，网页调用，app的消息中心的消息或者调用，还可以用于服务器下发跳转逻辑，例如banner。相比其他同类库，它具有如下特点
 * 支持自由，所见即所得的路由处理函数  
 * 支持自动跳转和手动跳转  
 * 支持参数自动填充  
@@ -9,8 +9,10 @@
 * 支持数据暂存，类似剪贴板  
 
 # 使用方法
+例如:你想添加一个对BViewController的跳转，并携带参数，那么设计好的链接如下  
+你的schema://b?pa=1&pb=2&pc=3
 
-1.在podfile中添加 pod 'HGoto'并更新  
+1.在podfile中添加 pod 'HGoto'并更新  
 2.为一个类添加路由节点  
 ```
 @implementation BViewController
@@ -44,5 +46,5 @@ HGotoReg(@"b")
 @end
 ```
 
-3.在浏览器地址栏填入HGoto://b?pa=1&pb=2&pc=3试试吧，注意改成你的schema  
+3.在浏览器地址栏填入"你的schema://b?pa=1&pb=2&pc=3"试试吧，注意要确认你的schema在info.plist的url-types里面
 4.其他例子见demo
