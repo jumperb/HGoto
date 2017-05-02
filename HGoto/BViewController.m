@@ -27,7 +27,7 @@
         {
             [self.navigationController popViewControllerAnimated:YES];
             UIImage *img = [UIImage imageNamed:@"bg.jpg"];
-            self.gotoCallback(self, img, ((arc4random()%2)?nil:herr(kInnerErrorCode, @"测试错误")));
+            self.gotoCallback(self, img, nil);
         }
     });
 }

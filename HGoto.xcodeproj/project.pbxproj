@@ -250,6 +250,7 @@
 				TargetAttributes = {
 					00C3319A1A2EBECF00E55793 = {
 						CreatedOnToolsVersion = 6.1;
+						ProvisioningStyle = Manual;
 					};
 					00C331B31A2EBED000E55793 = {
 						CreatedOnToolsVersion = 6.1;
@@ -465,11 +466,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				GCC_PREFIX_HEADER = HGoto/Prefix.pch;
 				INFOPLIST_FILE = HGoto/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.HKit.HGoto;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zct.hgoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -479,11 +483,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				GCC_PREFIX_HEADER = HGoto/Prefix.pch;
 				INFOPLIST_FILE = HGoto/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.HKit.HGoto;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zct.hgoto;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

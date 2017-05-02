@@ -28,11 +28,17 @@ HGotoReg(@"app")
         {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:schema]];
         }
+        else if (url)
+        {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url decode]]];
+        }
     }
-
-    if (url)
+    else
     {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url decode]]];
+        if (url)
+        {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url decode]]];
+        }
     }
 }
 

@@ -186,7 +186,7 @@
             [HGoto route:@"HGoto://b?pa=1&pb=2&pc=3&next=HGoto%3a%2f%2fa"];
             break;
         case 10:
-            [HGoto route:@"HGoto://app?schema=weichat%3a%2f%2f&url=https%3a%2f%2fitunes.apple.com%2fus%2fapp%2fwechat%2fid414478124%3fmt%3d8"];
+            [HGoto route:@"HGoto://app?schema=wechat%3a%2f%2f&url=https%3a%2f%2fitunes.apple.com%2fus%2fapp%2fwechat%2fid414478124%3fmt%3d8"];
             break;
         case 11:
             [HGoto route:@"HGoto://web?url=https%3a%2f%2fwww.baidu.com"];
