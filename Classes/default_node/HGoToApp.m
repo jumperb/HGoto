@@ -8,6 +8,7 @@
 
 #import "HGoToApp.h"
 #import "HGoTo.h"
+#import <NSString+ext.h>
 
 @interface HGoToApp () <SKStoreProductViewControllerDelegate>
 

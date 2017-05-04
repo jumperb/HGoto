@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "HGoto"
-  s.version      = "1.0.4"
+  s.version      = "1.0.5"
   s.summary      = "A short description of HGoto."
 
   s.description  = <<-DESC
@@ -23,8 +23,8 @@ Pod::Spec.new do |s|
   
   s.prefix_header_contents = '#import "HCommon.h"'
   
-  s.dependency 'Hodor'
-  
+  s.dependency 'Hodor/Feature'
+  s.dependency 'Hodor/Defines'
   s.requires_arc = true
   
   s.ios.deployment_target = '7.0'

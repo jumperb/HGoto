@@ -9,6 +9,9 @@
 #import "HGoTo.h"
 #import <Hodor/NSObject+annotation.h>
 #import "HGotoRuntimeSupport.h"
+#import <Hodor/NSString+ext.h>
+#import <Hodor/NSError+ext.h>
+#import <Hodor/HDefines.h>
 
 @interface HGoToPathNode : NSObject
 @property (nonatomic) NSString *name;
@@ -77,7 +80,7 @@
         //TODO 其他schema统一交外部处理
         if ([path hasPrefix:@"http://"] || [path hasPrefix:@"https://"])
         {
-            [[UIApplication sharedApplication] openURLInApp:[NSURL URLWithString:path]];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:path]];
             return;
         }
         if (finish)

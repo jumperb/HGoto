@@ -7,6 +7,7 @@
 //
 
 #import "HGotoConfigIMP.h"
+#import <HCommon.h>
 
 @implementation HGotoConfigIMP
 

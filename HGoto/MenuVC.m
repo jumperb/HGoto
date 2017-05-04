@@ -10,6 +10,7 @@
 #import "HGoTo.h"
 #import "CViewController.h"
 #import "BViewController.h"
+#import <HCommon.h>
 
 @interface MenuVC ()
 

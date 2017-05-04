@@ -8,6 +8,7 @@
 
 #import "CViewController.h"
 #import "HGoTo.h"
+#import <HCommon.h>
 
 @implementation CViewController1
 

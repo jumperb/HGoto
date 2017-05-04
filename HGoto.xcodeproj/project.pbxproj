@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0033934C1E3360F4001D820D /* HGoToApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 003393491E3360F4001D820D /* HGoToApp.m */; };
-		0033934D1E3360F4001D820D /* HGoToWeb.m in Sources */ = {isa = PBXBuildFile; fileRef = 0033934B1E3360F4001D820D /* HGoToWeb.m */; };
 		0071C5131A2EE7F700135518 /* bg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0071C5121A2EE7F700135518 /* bg.jpg */; };
 		0071C5191A2EE97B00135518 /* BViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0071C5181A2EE97B00135518 /* BViewController.m */; };
 		0071C51C1A2EE98800135518 /* CViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0071C51B1A2EE98800135518 /* CViewController.m */; };
@@ -37,8 +36,6 @@
 /* Begin PBXFileReference section */
 		003393481E3360F4001D820D /* HGoToApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HGoToApp.h; sourceTree = "<group>"; };
 		003393491E3360F4001D820D /* HGoToApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGoToApp.m; sourceTree = "<group>"; };
-		0033934A1E3360F4001D820D /* HGoToWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HGoToWeb.h; sourceTree = "<group>"; };
-		0033934B1E3360F4001D820D /* HGoToWeb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HGoToWeb.m; sourceTree = "<group>"; };
 		0071C5121A2EE7F700135518 /* bg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bg.jpg; sourceTree = "<group>"; };
 		0071C5141A2EE96300135518 /* AViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AViewController.h; sourceTree = "<group>"; };
 		0071C5151A2EE96300135518 /* AViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AViewController.m; sourceTree = "<group>"; };
@@ -93,8 +90,6 @@
 			children = (
 				003393481E3360F4001D820D /* HGoToApp.h */,
 				003393491E3360F4001D820D /* HGoToApp.m */,
-				0033934A1E3360F4001D820D /* HGoToWeb.h */,
-				0033934B1E3360F4001D820D /* HGoToWeb.m */,
 			);
 			path = default_node;
 			sourceTree = "<group>";
@@ -350,7 +345,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0071C51C1A2EE98800135518 /* CViewController.m in Sources */,
-				0033934D1E3360F4001D820D /* HGoToWeb.m in Sources */,
 				15D957E41EB2DF1200073EBE /* HGotoRuntimeSupport.m in Sources */,
 				00C331A71A2EBED000E55793 /* MenuVC.m in Sources */,
 				00C331A41A2EBECF00E55793 /* AppDelegate.m in Sources */,

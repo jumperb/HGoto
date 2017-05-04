@@ -9,7 +9,8 @@
 #ifndef HGoto_HGoToSupport_h
 #define HGoto_HGoToSupport_h
 
-#import "HCommon.h"
+#import <HClassManager.h>
+#import <HCommonBlock.h>
 
 #define HGOTO_NODE_REG_PREFIX @"HGOTO_NODE_REG_PREFIX"
 
