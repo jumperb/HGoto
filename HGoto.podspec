@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "HGoto"
-  s.version      = "1.0.5"
+  s.version      = "1.0.6"
   s.summary      = "A short description of HGoto."
 
   s.description  = <<-DESC
@@ -20,8 +20,6 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/jumperb/HGoto.git", :tag => s.version.to_s}
 
   s.source_files  = 'Classes/**/*.{h,m}'
-  
-  s.prefix_header_contents = '#import "HCommon.h"'
   
   s.dependency 'Hodor/Feature'
   s.dependency 'Hodor/Defines'

@@ -387,7 +387,7 @@
             {
                 NSDictionary *params = [node paramsMap];
                 NSDictionary *keyMaping = [self getOptKeyMap:options];
-                NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:self.autoRoutedVC.class isDepSearch:NO];
+                NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:self.autoRoutedVC.class isDepSearch:YES];
                 for (HGOTOPropertyDetail *ppDetail in pplist)
                 {
                     NSString *mappedKey = nil;

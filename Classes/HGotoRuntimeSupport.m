@@ -39,6 +39,7 @@
         free(properties);
         if (!deepSearch) break;
         entityClass = class_getSuperclass(entityClass);
+        if (entityClass == [UIViewController class])  break;
     }
 
     return pplist;
