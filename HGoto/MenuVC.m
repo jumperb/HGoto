@@ -48,7 +48,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 12;
+    return 13;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -132,6 +132,10 @@
             cell.textLabel.text = @"内置跳转点 web";
             cell.detailTextLabel.text = nil;
             break;
+        case 12:
+            cell.textLabel.text = @"继承关系";
+            cell.detailTextLabel.text = nil;
+            break;
         default:
             break;
     }
@@ -192,7 +196,9 @@
         case 11:
             [HGoto route:@"HGoto://web?url=https%3a%2f%2fwww.baidu.com"];
             break;
-            
+        case 12:
+            [HGoto route:@"HGoto://a2"];
+            break;
         default:
             break;
     }

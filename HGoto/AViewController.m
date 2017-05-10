@@ -21,3 +21,14 @@ HGotoReg(@"a");
 }
 
 @end
+
+
+@implementation AViewController2
+HGotoReg(@"a2");
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.title = @"A2";
+    self.view.backgroundColor = [UIColor brownColor];
+}
+@end
