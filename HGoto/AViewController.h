@@ -12,6 +12,6 @@
 
 @end
 
-@interface AViewController2 : UIViewController
+@interface AViewController2 : AViewController
 
 @end

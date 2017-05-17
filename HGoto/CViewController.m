@@ -61,13 +61,13 @@ HGotoReg2(@"c3",HGOtoOpt_AutoFill)
     self.title = @"C3";
     UITextView *textView = [[UITextView alloc] initWithFrame:self.view.bounds];
     self.view = textView;
-    textView.text = [NSString stringWithFormat:@"pa=%@,pb=%d,pc=%@", self.pa,self.pb,self.pc];
+    textView.text = [NSString stringWithFormat:@"pa=%@,PB=%d,pc=%@", self.pa,self.PB,self.pc];
 }
 @end
 
 @implementation CViewController4
 
-HGotoReg2(@"c4", HGOtoOpt_AutoFill, HGOtoOpt_KeyMap((@{@"pa":@"eee",@"pb":@"fff",@"pc":@"ggg"})))
+HGotoReg2(@"c4", HGOtoOpt_AutoFill, HGOtoOpt_KeyMap((@{@"pa":@"eee",@"pb":@"FFF",@"pc":@"ggg"})))
 
 - (void)viewDidLoad
 {
@@ -75,7 +75,7 @@ HGotoReg2(@"c4", HGOtoOpt_AutoFill, HGOtoOpt_KeyMap((@{@"pa":@"eee",@"pb":@"fff"
     self.title = @"C4";
     UITextView *textView = [[UITextView alloc] initWithFrame:self.view.bounds];
     self.view = textView;
-    textView.text = [NSString stringWithFormat:@"eee=%@,fff=%d,ggg=%@", self.eee,self.fff,self.ggg];
+    textView.text = [NSString stringWithFormat:@"eee=%@,FFF=%d,ggg=%@", self.eee,self.FFF,self.ggg];
 }
 @end
 

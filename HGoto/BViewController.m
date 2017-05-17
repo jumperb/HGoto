@@ -20,7 +20,7 @@
     self.view.backgroundColor = [UIColor blueColor];
     UITextView *textView = [[UITextView alloc] initWithFrame:self.view.bounds];
     self.view = textView;
-    textView.text = [NSString stringWithFormat:@"pa=%@,pb=%d,pc=%@", self.pa,self.pb,self.pc];
+    textView.text = [NSString stringWithFormat:@"pa=%@,PB=%d,pc=%@", self.pa,self.PB,self.pc];
     
     dispatchAfter(2, ^{
         
@@ -40,11 +40,11 @@
 
 HGotoReg(@"b")
 
-+ (void)hgoto_pa:(NSString *)pa pb:(NSString *)pb pc:(NSString *)pc finish:(finish_callback)finish
++ (void)hgoto_pa:(NSString *)pa PB:(NSString *)PB pc:(NSString *)pc finish:(finish_callback)finish
 {
     BViewController *vc = [HGoto autoRoutedVC];
     vc.pa = pa;
-    vc.pb = [pb intValue];
+    vc.PB = [PB intValue];
     vc.pc = @([pc intValue]);
     vc.gotoCallback = finish;
 }

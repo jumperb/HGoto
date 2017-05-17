@@ -180,7 +180,7 @@
         }
         if (modeMethod1)
         {
-            NSString *recverParamsString = [[modeMethod1 substringFromIndex:methodMode1Prefix.length] lowercaseString];
+            NSString *recverParamsString = [modeMethod1 substringFromIndex:methodMode1Prefix.length];
             NSArray *comp = [recverParamsString componentsSeparatedByString:@":"];
             NSMutableArray *recverParamsArray = [NSMutableArray new];
             for (NSString *str in comp)
@@ -563,7 +563,7 @@
             {
                 NSString *key = [kv[0] decode];
                 NSString *value = [kv[1] decode];
-                [dict setObject:value forKey:[key lowercaseString]];
+                [dict setObject:value forKey:key];
             }
         }
         _paramsMap = dict;

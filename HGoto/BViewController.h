@@ -10,6 +10,6 @@
 
 @interface BViewController : UIViewController
 @property (nonatomic) NSString *pa;
-@property (nonatomic) int pb;
+@property (nonatomic) int PB;
 @property (nonatomic) NSNumber *pc;
 @end

@@ -94,7 +94,7 @@
             break;
         case 2:
             cell.textLabel.text = @"携带参数";
-            cell.detailTextLabel.text = @"跳到BController携带参数pa=1,pb=2,pc=ccccccc";
+            cell.detailTextLabel.text = @"跳到BController携带参数pa=1,PB=2,pc=ccccccc";
             break;
         case 3:
             cell.textLabel.text = @"选项: HGotoOpt_ManualRoute";
@@ -152,7 +152,7 @@
             break;
         case 2:
             //这一条注意下BViewController这个方法的方法体
-            [HGoto route:@"HGoto://b?pa=1&pb=2&pc=3" finish:^(id sender, UIImage *data, NSError *error) {
+            [HGoto route:@"HGoto://b?pa=1&PB=2&pc=3" finish:^(id sender, UIImage *data, NSError *error) {
                 if (error)
                 {
                     NSLog(@"%@", error);
@@ -176,7 +176,7 @@
             
             break;
         case 5:
-            [HGoto route:@"HGoto://c3?pa=1&pb=2&pc=3"];
+            [HGoto route:@"HGoto://c3?pa=1&PB=2&pc=3"];
             break;
         case 6:
             [HGoto route:@"HGoto://c4?pa=1&pb=2&pc=3"];
@@ -188,7 +188,7 @@
             [HGoto route:@"HGoto://c6?pa=1&pb=2&pc=3"];
             break;
         case 9:
-            [HGoto route:@"HGoto://b?pa=1&pb=2&pc=3&next=HGoto%3a%2f%2fa"];
+            [HGoto route:@"HGoto://b?pa=1&PB=2&pc=3&next=HGoto%3a%2f%2fa"];
             break;
         case 10:
             [HGoto route:@"HGoto://app?schema=wechat%3a%2f%2f&url=https%3a%2f%2fitunes.apple.com%2fus%2fapp%2fwechat%2fid414478124%3fmt%3d8"];

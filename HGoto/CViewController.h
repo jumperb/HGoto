@@ -18,13 +18,13 @@
 
 @interface CViewController3 : UIViewController
 @property (nonatomic) NSString *pa;
-@property (nonatomic) int pb;
+@property (nonatomic) int PB;
 @property (nonatomic) NSNumber *pc;
 @end
 
 @interface CViewController4 : UIViewController
 @property (nonatomic) NSString *eee;
-@property (nonatomic) int fff;
+@property (nonatomic) int FFF;
 @property (nonatomic) NSNumber *ggg;
 @end
 
