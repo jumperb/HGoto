@@ -25,7 +25,7 @@
 @interface HGoto ()
 @property (nonatomic, readwrite) id<HGotoConfig> config;
 @property (nonatomic) NSMutableDictionary *pasteboard;
-@property (nonatomic) UIViewController *autoRoutedVC;
+@property (nonatomic, weak) UIViewController *autoRoutedVC;
 @end
 
 @implementation HGoto
@@ -34,7 +34,7 @@
 {
     static dispatch_once_t pred;
     static HGoto *o = nil;
-
+    
     dispatch_once(&pred, ^{
         o = [HGoto new];
     });
@@ -95,7 +95,7 @@
         {finish(self, nil, herr(kNoDataErrorCode, ([NSString stringWithFormat:@"path not found : %@", path])));}
         return;
     }
-
+    
     path = [path substringFromIndex:self.config.appSchema.length];
     HGoToPathNode *head = [HGoto stringToNodes:path];
     @weakify(self)
@@ -160,7 +160,7 @@
     //模式3 +[xxClass hgoto:(NSString *)params]
     //模式4 +[xxClass hgotoWithFinish:(finish_callback)finish]
     //模式4 +[xxClass hgoto]
-
+    
     static NSString *methodMode1Prefix = @"hgoto_";
     static NSString *methodMode2Prefix = @"hgotoWithParams:";
     static NSString *methodMode3Prefix = @"hgoto:";
@@ -188,7 +188,7 @@
                 if (str.length == 0) continue;
                 [recverParamsArray addObject:str];
             }
-
+            
             SEL modeSelector = NSSelectorFromString(modeMethod1);
             NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
             NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
@@ -323,6 +323,7 @@
         }
     }
     [self.pasteboard removeAllObjects];
+    self.autoRoutedVC = nil;
 }
 
 + (void)route:(NSString *)path
@@ -364,7 +365,6 @@
                     {
                         found = YES;
                         self.autoRoutedVC = vc;
-                        [self.config.navi popToViewController:vc animated:YES];
                         break;
                     }
                 }
@@ -372,14 +372,12 @@
                 {
                     UIViewController *vc = [klass new];
                     self.autoRoutedVC = vc;
-                    [self.config.navi pushViewController:vc animated:YES];
                 }
             }
             else
             {
                 UIViewController *vc = [klass new];
                 self.autoRoutedVC = vc;
-                [self.config.navi pushViewController:vc animated:YES];
             }
             
             //处理autofill
@@ -437,6 +435,7 @@
                 }
                 
             }
+            [self.config.navi pushViewController:self.autoRoutedVC animated:YES];
         }
     }
 }
@@ -548,26 +547,26 @@
 {
     if (!_paramsMap)
     {
-    if (self.param.length == 0)
-    {
-        _paramsMap = [NSDictionary new];
-    }
-    else
-    {
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        NSArray *segments = [self.param componentsSeparatedByString:@"&"];
-        for(NSString *segment in segments)
+        if (self.param.length == 0)
         {
-            NSArray *kv = [segment componentsSeparatedByString:@"="];
-            if (kv.count >= 2)
-            {
-                NSString *key = [kv[0] decode];
-                NSString *value = [kv[1] decode];
-                [dict setObject:value forKey:key];
-            }
+            _paramsMap = [NSDictionary new];
         }
-        _paramsMap = dict;
-    }
+        else
+        {
+            NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+            NSArray *segments = [self.param componentsSeparatedByString:@"&"];
+            for(NSString *segment in segments)
+            {
+                NSArray *kv = [segment componentsSeparatedByString:@"="];
+                if (kv.count >= 2)
+                {
+                    NSString *key = [kv[0] decode];
+                    NSString *value = [kv[1] decode];
+                    [dict setObject:value forKey:key];
+                }
+            }
+            _paramsMap = dict;
+        }
     }
     return _paramsMap;
 }
