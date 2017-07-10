@@ -352,6 +352,7 @@
 {
     if ([klass isSubclassOfClass:[UIViewController class]])
     {
+        BOOL needPopAction = NO;
         if (![options containsObject:HGotoOpt_ManualRoute])
         {
             //处理autopop
@@ -365,6 +366,7 @@
                     {
                         found = YES;
                         self.autoRoutedVC = vc;
+                        needPopAction = YES;
                         break;
                     }
                 }
@@ -435,7 +437,14 @@
                 }
                 
             }
-            [self.config.navi pushViewController:self.autoRoutedVC animated:YES];
+            if (needPopAction)
+            {
+                [self.config.navi popToViewController:self.autoRoutedVC animated:YES];
+            }
+            else
+            {
+                [self.config.navi pushViewController:self.autoRoutedVC animated:YES];
+            }
         }
     }
 }
