@@ -353,6 +353,7 @@
 {
     if ([klass isSubclassOfClass:[UIViewController class]])
     {
+        UIViewController *targetVC = nil;
         BOOL needPopAction = NO;
         if (![options containsObject:HGotoOpt_ManualRoute])
         {
@@ -366,6 +367,7 @@
                     if ([vc isKindOfClass:klass])
                     {
                         found = YES;
+                        targetVC = vc;
                         self.autoRoutedVC = vc;
                         needPopAction = YES;
                         break;
@@ -373,14 +375,14 @@
                 }
                 if (!found)
                 {
-                    UIViewController *vc = [klass new];
-                    self.autoRoutedVC = vc;
+                    targetVC = [klass new];
+                    self.autoRoutedVC = targetVC;
                 }
             }
             else
             {
-                UIViewController *vc = [klass new];
-                self.autoRoutedVC = vc;
+                targetVC = [klass new];
+                self.autoRoutedVC = targetVC;
             }
             
             //处理autofill
