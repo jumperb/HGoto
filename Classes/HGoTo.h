@@ -48,6 +48,8 @@
 @protocol HGotoConfig <NSObject>
 @property (nonatomic, readonly) NSString *appSchema;
 @property (nonatomic, readonly) UINavigationController *navi;
+@optional
+- (void)openHttpURL:(NSString *)httpURL;
 @end
 
 @interface HGoto : NSObject

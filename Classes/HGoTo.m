@@ -12,7 +12,6 @@
 #import <Hodor/NSString+ext.h>
 #import <Hodor/NSError+ext.h>
 #import <Hodor/HDefines.h>
-#import <Hodor/UIApplication+ext.h>
 
 @interface HGoToPathNode : NSObject
 @property (nonatomic) NSString *name;
@@ -81,7 +80,10 @@
         //TODO 其他schema统一交外部处理
         if ([path hasPrefix:@"http://"] || [path hasPrefix:@"https://"])
         {
-            [[UIApplication sharedApplication] openURLInApp:[NSURL URLWithString:path]];
+            if ([self.config respondsToSelector:@selector(openHttpURL:)])
+            {
+                [self.config openHttpURL:path];
+            }
             return;
         }
         if (finish)
