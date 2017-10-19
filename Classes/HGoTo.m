@@ -297,6 +297,7 @@
                         NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
                         [invocation setTarget:klass];
                         [invocation setSelector:modeSelectorWithFinish];
+                        [invocation setArgument:&finish atIndex:2];
                         [invocation invoke];
                     }
                 }
@@ -322,6 +323,7 @@
             NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
             [invocation setTarget:klass];
             [invocation setSelector:modeSelectorWithFinish];
+            [invocation setArgument:&finish atIndex:2];
             [invocation invoke];
         }
     }
