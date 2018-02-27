@@ -11,9 +11,7 @@
 #import <HCommon.h>
 
 @implementation CViewController1
-
 HGotoReg2(@"c1",HGotoOpt_ManualRoute)
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -21,7 +19,13 @@ HGotoReg2(@"c1",HGotoOpt_ManualRoute)
 }
 + (void)hgoto_pa:(NSString *)pa
 {
-    [[UIApplication navi] pushViewController:[CViewController1 new] animated:YES];
+    CATransition *transition = [CATransition animation];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    transition.duration = 0.3;
+    [transition setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    [[UIApplication navi].view.layer addAnimation:transition forKey:kCATransition];
+    [[UIApplication navi] pushViewController:[CViewController1 new] animated:NO];
 }
 @end
 

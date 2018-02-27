@@ -62,10 +62,13 @@
 + (void)route:(NSString *)path finish:(finish_callback)finish;
 //普通跳转+回调
 + (void)route:(NSString *)path success:(callback)success faile:(fail_callback)faile;
+//只取到VC不进行跳转，自动参数的话参数已经填好
++ (UIViewController *)getViewController:(NSString *)path;
 
 //数据暂存，route完就删除掉
 + (void)pushObject:(id)object forkey:(NSString *)key;
 + (id)getObject:(id)object forkey:(NSString *)key;
+
 //当前这次跳转路由目标是vc，并且自动跳转的情况下，可以通过这个来获取目标VC
 + (id)autoRoutedVC;
 

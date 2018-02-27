@@ -10,7 +10,6 @@
 #import <HCommon.h>
 
 @implementation HGotoConfigIMP
-
 HRegForProtocal(HGotoConfig)
 
 - (NSString *)appSchema

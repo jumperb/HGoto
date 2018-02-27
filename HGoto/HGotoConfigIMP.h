@@ -10,5 +10,4 @@
 #import "HGoTo.h"
 
 @interface HGotoConfigIMP : NSObject <HGotoConfig>
-
 @end

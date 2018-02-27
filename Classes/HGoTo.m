@@ -73,7 +73,7 @@
     }
     return head;
 }
-- (void)route:(NSString *)path finish:(finish_callback)finish
+- (id)route:(NSString *)path doJump:(BOOL)doJump finish:(finish_callback)finish
 {
     if (![path hasPrefix:self.config.appSchema])
     {
@@ -84,25 +84,25 @@
             {
                 [self.config openHttpURL:path];
             }
-            return;
+            return nil;
         }
         if (finish)
         {
             finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"wrong protocal only support %@",self.config.appSchema])));
         }
-        return;
+        return nil;
     }
     if (path.length == self.config.appSchema.length)
     {
         if (finish)
         {finish(self, nil, herr(kNoDataErrorCode, ([NSString stringWithFormat:@"path not found : %@", path])));}
-        return;
+        return nil;
     }
     
     path = [path substringFromIndex:self.config.appSchema.length];
     HGoToPathNode *head = [HGoto stringToNodes:path];
     @weakify(self)
-    [self routeWithNode:head finish:^(id sender, id data, NSError *error) {
+    return [self routeWithNode:head doJump:doJump finish:^(id sender, id data, NSError *error) {
         @strongify(self)
         if (error)
         {
@@ -114,7 +114,7 @@
             if (next)
             {
                 if (data) [self.pasteboard setObject:data forKey:HGotoPreStepDataKey];
-                [self route:next finish:finish];
+                [self route:next doJump:doJump finish:finish];
             }
             else
             {
@@ -123,7 +123,7 @@
         }
     }];
 }
-- (void)routeWithNode:(HGoToPathNode *)node finish:(finish_callback)finish
+- (id)routeWithNode:(HGoToPathNode *)node doJump:(BOOL)doJump finish:(finish_callback)finish
 {
     //搜索全局节点
     NSString *nodeName = node.name;
@@ -139,7 +139,7 @@
     {
         NSAssert(NO, @"没找到对应的注册路径点");
         if (finish) finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"没找到对应的注册路径点 %@",nodeName])));
-        return;
+        return nil;
     }
     
     Class klass = NSClassFromString(className);
@@ -148,11 +148,11 @@
     {
         NSAssert(NO, @"无法初始化类");
         if (finish) finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"无法初始化类 %@", className])));
-        return;
+        return nil;
     }
     
     //应用选项
-    [self applyOptions:options targetClass:klass node:node];
+    self.autoRoutedVC = [self applyOptions:options doJump:doJump targetClass:klass node:node];
     
     
     //模式1 +[xxClass hgoto_p1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3 finish:(finish_callback)finish]
@@ -328,7 +328,9 @@
         }
     }
     [self.pasteboard removeAllObjects];
+    id res = self.autoRoutedVC;
     self.autoRoutedVC = nil;
+    return res;
 }
 
 + (void)route:(NSString *)path
@@ -338,7 +340,7 @@
 
 + (void)route:(NSString *)path success:(callback)success faile:(fail_callback)faile
 {
-    [[HGoto center] route:path finish:^(id sender, id data, NSError *error) {
+    [[HGoto center] route:path doJump:YES finish:^(id sender, id data, NSError *error) {
         if (error)
         {
             if (faile) faile(sender, error);
@@ -351,9 +353,13 @@
 }
 + (void)route:(NSString *)path finish:(finish_callback)finish
 {
-    [[HGoto center] route:path finish:finish];
+    [[HGoto center] route:path doJump:YES finish:finish];
 }
-- (void)applyOptions:(NSArray *)options targetClass:(Class)klass node:(HGoToPathNode *)node
++ (UIViewController *)getViewController:(NSString *)path
+{
+    return [[HGoto center] route:path doJump:NO finish:nil];
+}
+- (id)applyOptions:(NSArray *)options doJump:(BOOL)doJump targetClass:(Class)klass node:(HGoToPathNode *)node
 {
     if ([klass isSubclassOfClass:[UIViewController class]])
     {
@@ -372,7 +378,6 @@
                     {
                         found = YES;
                         targetVC = vc;
-                        self.autoRoutedVC = vc;
                         needPopAction = YES;
                         break;
                     }
@@ -380,13 +385,11 @@
                 if (!found)
                 {
                     targetVC = [klass new];
-                    self.autoRoutedVC = targetVC;
                 }
             }
             else
             {
                 targetVC = [klass new];
-                self.autoRoutedVC = targetVC;
             }
             
             //处理autofill
@@ -394,7 +397,7 @@
             {
                 NSDictionary *params = [node paramsMap];
                 NSDictionary *keyMaping = [self getOptKeyMap:options];
-                NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:self.autoRoutedVC.class isDepSearch:YES];
+                NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:targetVC.class isDepSearch:YES];
                 for (HGOTOPropertyDetail *ppDetail in pplist)
                 {
                     NSString *mappedKey = nil;
@@ -413,7 +416,7 @@
                             
                             if ([ppDetail.typeString isEqualToString:NSStringFromClass([NSString class])] || [ppDetail.typeString isEqualToString:NSStringFromClass([NSMutableString class])])
                             {
-                                [self.autoRoutedVC setValue:[value stringValue] forKey:ppDetail.name];
+                                [targetVC setValue:[value stringValue] forKey:ppDetail.name];
                             }
                             else if (!ppDetail.isObj)
                             {
@@ -422,7 +425,7 @@
                                 NSNumber *valueNum = [formatter numberFromString:value];
                                 //if cannot convert value to number , set to 0 by defaylt
                                 if (!valueNum) valueNum = @(0);
-                                [self.autoRoutedVC setValue:valueNum forKey:ppDetail.name];
+                                [targetVC setValue:valueNum forKey:ppDetail.name];
                             }
                             else if (ppDetail.isObj && [ppDetail.typeString isEqualToString:NSStringFromClass([NSNumber class])])
                             {
@@ -431,28 +434,36 @@
                                 NSNumber *valueNum = [formatter numberFromString:value];
                                 //if cannot convert value to number , set to 0 by defaylt
                                 if (!valueNum) valueNum = @(0);
-                                [self.autoRoutedVC setValue:valueNum forKey:ppDetail.name];
+                                [targetVC setValue:valueNum forKey:ppDetail.name];
                             }
                             else if (ppDetail.isObj && [ppDetail.typeString isEqualToString:NSStringFromClass([NSDate class])])
                             {
                                 //NSDate
                                 double date = [value floatValue];
-                                [self.autoRoutedVC setValue:[NSDate dateWithTimeIntervalSince1970:date] forKey:ppDetail.name];
+                                [targetVC setValue:[NSDate dateWithTimeIntervalSince1970:date] forKey:ppDetail.name];
                             }
                         }
                     }
                 }
                 
             }
-            if (needPopAction)
+            if (doJump)
             {
-                [self.config.navi popToViewController:self.autoRoutedVC animated:YES];
-            }
-            else
-            {
-                [self.config.navi pushViewController:self.autoRoutedVC animated:YES];
+                if (needPopAction)
+                {
+                    [self.config.navi popToViewController:targetVC animated:YES];
+                }
+                else
+                {
+                    [self.config.navi pushViewController:targetVC animated:YES];
+                }
             }
         }
+        return targetVC;
+    }
+    else
+    {
+        return nil;
     }
 }
 - (NSDictionary *)getOptKeyMap:(NSArray *)options

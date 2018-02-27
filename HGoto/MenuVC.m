@@ -48,7 +48,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 13;
+    return 14;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -136,6 +136,9 @@
             cell.textLabel.text = @"继承关系";
             cell.detailTextLabel.text = nil;
             break;
+        case 13:
+            cell.textLabel.text = @"仅仅获取VC不跳转";
+            cell.detailTextLabel.text = nil;
         default:
             break;
     }
@@ -199,6 +202,11 @@
         case 12:
             [HGoto route:@"HGoto://a2"];
             break;
+        case 13:{
+            id res = [HGoto getViewController:@"HGoto://c4?pa=1&pb=2&pc=3"];
+            NSLog(@"res = %@", res);
+            break;
+        }
         default:
             break;
     }
