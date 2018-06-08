@@ -19,7 +19,7 @@ DerivedData/
 package/
 */*/xcuserdata/*
 */*/xcshareddata/*
-
+xcuserdata
 #cocoapods
 Pods/
 Podfile.lock

@@ -56,7 +56,35 @@
 {
     HGoToPathNode *head = nil;
     HGoToPathNode *currentNode = nil;
-    NSArray *components = [pathString componentsSeparatedByString:@"/"];
+    
+    //拆分
+    NSMutableArray *components = [NSMutableArray new];
+    NSMutableString *temp = [NSMutableString new];
+    BOOL questionMarkShown = NO;
+    for (int i = 0; i < pathString.length; i ++) {
+        NSString *c = [pathString substringWithRange:NSMakeRange(i, 1)];
+        if (!questionMarkShown && [c isEqualToString:@"/"])
+        {
+            [components addObject:temp];
+            temp = [NSMutableString new];
+        }
+        else if(!questionMarkShown && [c isEqualToString:@"?"])
+        {
+            questionMarkShown = YES;
+            [temp appendString:c];
+        }
+        else
+        {
+            [temp appendString:c];
+        }
+    }
+    if (temp.length > 0)
+    {
+        [components addObject:temp];
+    }
+    
+    
+    //转换为node
     for (NSString *nodeString in components)
     {
         NSString *trimNodeString = [nodeString trim];
