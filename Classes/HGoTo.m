@@ -12,14 +12,7 @@
 #import <Hodor/NSString+ext.h>
 #import <Hodor/NSError+ext.h>
 #import <Hodor/HDefines.h>
-
-@interface HGoToPathNode : NSObject
-@property (nonatomic) NSString *name;
-@property (nonatomic) NSString *param;
-@property (nonatomic) HGoToPathNode *next;
-@property (nonatomic) NSDictionary *paramsMap;
-- (instancetype)initWithNodeString:(NSString *)nodeString;
-@end
+#import <NSURL+ext.h>
 
 
 @interface HGoto ()
@@ -27,6 +20,7 @@
 @property (nonatomic) NSMutableDictionary *pasteboard;
 @property (nonatomic, weak) UIViewController *autoRoutedVC;
 @end
+
 
 @implementation HGoto
 
@@ -52,109 +46,58 @@
     return self;
 }
 
-+ (HGoToPathNode *)stringToNodes:(NSString *)pathString
-{
-    HGoToPathNode *head = nil;
-    HGoToPathNode *currentNode = nil;
-    
-    //拆分
-    NSMutableArray *components = [NSMutableArray new];
-    NSMutableString *temp = [NSMutableString new];
-    BOOL questionMarkShown = NO;
-    for (int i = 0; i < pathString.length; i ++) {
-        NSString *c = [pathString substringWithRange:NSMakeRange(i, 1)];
-        if (!questionMarkShown && [c isEqualToString:@"/"])
-        {
-            [components addObject:temp];
-            temp = [NSMutableString new];
-        }
-        else if(!questionMarkShown && [c isEqualToString:@"?"])
-        {
-            questionMarkShown = YES;
-            [temp appendString:c];
-        }
-        else
-        {
-            [temp appendString:c];
-        }
-    }
-    if (temp.length > 0)
-    {
-        [components addObject:temp];
-    }
-    
-    
-    //转换为node
-    for (NSString *nodeString in components)
-    {
-        NSString *trimNodeString = [nodeString trim];
-        if ([trimNodeString length] > 0)
-        {
-            HGoToPathNode *node = [[HGoToPathNode alloc] initWithNodeString:trimNodeString];
-            if (!head) head = node;
-            if (!currentNode) currentNode = node;
-            else
-            {
-                currentNode.next = node;
-            }
-        }
-    }
-    return head;
-}
 - (id)route:(NSString *)path doJump:(BOOL)doJump finish:(finish_callback)finish
 {
-    if (![path hasPrefix:self.config.appSchema])
+    NSURL *url = [NSURL URLWithString:path];
+    if (!url) return nil;
+    NSString *schema = url.scheme.lowercaseString;
+    if ([schema isEqualToString:@"http"] || [schema isEqualToString:@"https"])
     {
-        //TODO 其他schema统一交外部处理
-        if ([path hasPrefix:@"http://"] || [path hasPrefix:@"https://"])
+        if ([self.config respondsToSelector:@selector(openHttpURL:)])
         {
-            if ([self.config respondsToSelector:@selector(openHttpURL:)])
-            {
-                [self.config openHttpURL:path];
-            }
-            return nil;
+            [self.config openHttpURL:path];
         }
+        return nil;
+    }
+    else if ([schema isEqualToString:self.config.appSchema] || [[schema stringByAppendingString:@"://"] isEqualToString:self.config.appSchema.lowercaseString]) {
+        NSDictionary *params = [url parameterMap];
+        @weakify(self)
+        return [self routeWithURL:url params:params doJump:doJump finish:^(id sender, id data, NSError *error) {
+            @strongify(self)
+            if (error)
+            {
+                if (finish) finish(sender, data, error);
+            }
+            else
+            {
+                NSString *next = params[HGotoKeyword_Next];
+                if (next)
+                {
+                    if (data) [self.pasteboard setObject:data forKey:HGotoPreStepDataKey];
+                    [self route:next doJump:doJump finish:finish];
+                }
+                else
+                {
+                    if (finish) finish(sender, data, error);
+                }
+            }
+        }];
+    }
+    else
+    {
         if (finish)
         {
             finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"wrong protocal only support %@",self.config.appSchema])));
         }
         return nil;
     }
-    if (path.length == self.config.appSchema.length)
-    {
-        if (finish)
-        {finish(self, nil, herr(kNoDataErrorCode, ([NSString stringWithFormat:@"path not found : %@", path])));}
-        return nil;
-    }
     
-    path = [path substringFromIndex:self.config.appSchema.length];
-    HGoToPathNode *head = [HGoto stringToNodes:path];
-    @weakify(self)
-    return [self routeWithNode:head doJump:doJump finish:^(id sender, id data, NSError *error) {
-        @strongify(self)
-        if (error)
-        {
-            if (finish) finish(sender, data, error);
-        }
-        else
-        {
-            NSString *next = [head paramsMap][HGotoKeyword_Next];
-            if (next)
-            {
-                if (data) [self.pasteboard setObject:data forKey:HGotoPreStepDataKey];
-                [self route:next doJump:doJump finish:finish];
-            }
-            else
-            {
-                if (finish) finish(sender, data, error);
-            }
-        }
-    }];
 }
-- (id)routeWithNode:(HGoToPathNode *)node doJump:(BOOL)doJump finish:(finish_callback)finish
+- (id)routeWithURL:(NSURL *)url params:(NSDictionary *)params doJump:(BOOL)doJump finish:(finish_callback)finish
 {
     //搜索全局节点
-    NSString *nodeName = node.name;
+    NSString *nodeName = url.host;
+    if (url.path) nodeName = [nodeName stringByAppendingString:url.path];
     NSString *nodeRegName = [NSString stringWithFormat:@"%@_%@",HGOTO_NODE_REG_PREFIX,nodeName];
     __block NSString *className = nil;
     __block NSArray *options = nil;
@@ -180,7 +123,7 @@
     }
     
     //应用选项
-    self.autoRoutedVC = [self applyOptions:options doJump:doJump targetClass:klass node:node];
+    self.autoRoutedVC = [self applyOptions:options doJump:doJump targetClass:klass params:params];
     
     
     //模式1 +[xxClass hgoto_p1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3 finish:(finish_callback)finish]
@@ -195,7 +138,7 @@
     static NSString *methodMode1Prefix = @"hgoto_";
     static NSString *methodMode2Prefix = @"hgotoWithParams:";
     static NSString *methodMode3Prefix = @"hgoto:";
-    NSDictionary *params = [node paramsMap];
+    
     if (params.count > 0)
     {
         NSArray *classMethods = [NSObject hClassMethodNames:klass];
@@ -289,7 +232,13 @@
                 }
                 if (modeMethod3)
                 {
-                    NSString *paramString = node.param;
+                    NSString *paramString = nil;
+                    NSString *urlString = url.absoluteString;
+                    NSUInteger firstQuestionMark = [urlString rangeOfString:@"?"].location;
+                    if (firstQuestionMark != NSNotFound)
+                    {
+                        paramString = [urlString substringFromIndex:firstQuestionMark + 1];
+                    }
                     SEL modeSelector = NSSelectorFromString(modeMethod3);
                     NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
                     NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
@@ -387,7 +336,7 @@
 {
     return [[HGoto center] route:path doJump:NO finish:nil];
 }
-- (id)applyOptions:(NSArray *)options doJump:(BOOL)doJump targetClass:(Class)klass node:(HGoToPathNode *)node
+- (id)applyOptions:(NSArray *)options doJump:(BOOL)doJump targetClass:(Class)klass params:(NSDictionary *)params
 {
     if ([klass isSubclassOfClass:[UIViewController class]])
     {
@@ -423,7 +372,6 @@
             //处理autofill
             if ([options containsObject:HGOtoOpt_AutoFill])
             {
-                NSDictionary *params = [node paramsMap];
                 NSDictionary *keyMaping = [self getOptKeyMap:options];
                 NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:targetVC.class isDepSearch:YES];
                 for (HGOTOPropertyDetail *ppDetail in pplist)
@@ -525,112 +473,6 @@
 {
     return [HGoto center].autoRoutedVC;
 }
-@end
-
-
-@implementation HGoToPathNode
-
-- (instancetype)initWithNodeString:(NSString *)nodeString
-{
-    self = [super init];
-    if (self)
-    {
-        NSMutableArray *components = [NSMutableArray new];
-        NSMutableString *tempStr = [NSMutableString new];
-        int kuohaoCount = 0;
-        for (int i = 0; i < nodeString.length; i ++)
-        {
-            NSString *ch = [nodeString substringWithRange:NSMakeRange(i, 1)];
-            if (kuohaoCount > 0)
-            {
-                if ([ch isEqualToString:@"("])
-                {
-                    kuohaoCount ++;
-                }
-                else if([ch isEqualToString:@")"])
-                {
-                    kuohaoCount --;
-                    if (kuohaoCount == 0) continue;
-                }
-                [tempStr appendString:ch];
-            }
-            else
-            {
-                if ([ch isEqualToString:@"("])
-                {
-                    kuohaoCount ++;
-                }
-                else if ([ch isEqualToString:@":"])
-                {
-                    [components addObject:tempStr];
-                    tempStr = [NSMutableString new];
-                }
-                else if ([ch isEqualToString:@"?"])
-                {
-                    [components addObject:tempStr];
-                    tempStr = [NSMutableString new];
-                }
-                else
-                {
-                    [tempStr appendString:ch];
-                }
-            }
-        }
-        if (tempStr.length > 0) [components addObject:tempStr];
-        int index = 0;
-        for (NSString *value in components)
-        {
-            if (value.length > 0)
-            {
-                if (index == 0)
-                {
-                    self.name = value;
-                }
-                else if (index == 1)
-                {
-                    self.param = [value trim];
-                    break;
-                }
-            }
-            index++;
-        }
-    }
-    return self;
-}
-
-- (NSDictionary *)paramsMap
-{
-    if (!_paramsMap)
-    {
-        if (self.param.length == 0)
-        {
-            _paramsMap = [NSDictionary new];
-        }
-        else
-        {
-            NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-            NSArray *segments = [self.param componentsSeparatedByString:@"&"];
-            for(NSString *segment in segments)
-            {
-                NSArray *kv = [segment componentsSeparatedByString:@"="];
-                if (kv.count >= 2)
-                {
-                    NSString *key = [kv[0] decode];
-                    NSString *value = [kv[1] decode];
-                    [dict setObject:value forKey:key];
-                }
-            }
-            _paramsMap = dict;
-        }
-    }
-    return _paramsMap;
-}
-
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"action:%@\nparam:%@", _name, _param];
-}
-
 @end
 
 #import <objc/runtime.h>
