@@ -139,169 +139,144 @@
     static NSString *methodMode2Prefix = @"hgotoWithParams:";
     static NSString *methodMode3Prefix = @"hgoto:";
     
-    if (params.count > 0)
+
+    NSArray *classMethods = [NSObject hClassMethodNames:klass];
+    //模式1
+    NSString *modeMethod1 = nil;
+    for (NSString *methodName in classMethods)
     {
-        NSArray *classMethods = [NSObject hClassMethodNames:klass];
-        //模式1
-        NSString *modeMethod1 = nil;
+        if ([methodName hasPrefix:methodMode1Prefix])
+        {
+            modeMethod1 = methodName;
+            break;
+        }
+    }
+    if (modeMethod1)
+    {
+        NSString *recverParamsString = [modeMethod1 substringFromIndex:methodMode1Prefix.length];
+        NSArray *comp = [recverParamsString componentsSeparatedByString:@":"];
+        NSMutableArray *recverParamsArray = [NSMutableArray new];
+        for (NSString *str in comp)
+        {
+            if (str.length == 0) continue;
+            [recverParamsArray addObject:str];
+        }
+        
+        SEL modeSelector = NSSelectorFromString(modeMethod1);
+        NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
+        NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
+        [invocation setTarget:klass];
+        [invocation setSelector:modeSelector];
+        //if it has params
+        if (sig.numberOfArguments > 2)
+        {
+            int i = 2;
+            for (NSString *paramKey in recverParamsArray)
+            {
+                id value = params[paramKey];
+                if ([paramKey isEqualToString:@"finish"])
+                {
+                    [invocation setArgument:&finish atIndex:i];
+                }
+                else
+                {
+                    [invocation setArgument:&value atIndex:i];
+                }
+                i ++;
+            }
+        }
+        [invocation invoke];
+    }
+    else
+    {
+        //模式2
+        NSString *modeMethod2 = nil;
         for (NSString *methodName in classMethods)
         {
-            if ([methodName hasPrefix:methodMode1Prefix])
+            if ([methodName hasPrefix:methodMode2Prefix])
             {
-                modeMethod1 = methodName;
+                modeMethod2 = methodName;
                 break;
             }
         }
-        if (modeMethod1)
+        if (modeMethod2)
         {
-            NSString *recverParamsString = [modeMethod1 substringFromIndex:methodMode1Prefix.length];
-            NSArray *comp = [recverParamsString componentsSeparatedByString:@":"];
-            NSMutableArray *recverParamsArray = [NSMutableArray new];
-            for (NSString *str in comp)
-            {
-                if (str.length == 0) continue;
-                [recverParamsArray addObject:str];
-            }
-            
-            SEL modeSelector = NSSelectorFromString(modeMethod1);
+            SEL modeSelector = NSSelectorFromString(modeMethod2);
             NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
             NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
             [invocation setTarget:klass];
             [invocation setSelector:modeSelector];
-            //if it has params
-            if (sig.numberOfArguments > 2)
+            if (sig.numberOfArguments == 3)
             {
-                int i = 2;
-                for (NSString *paramKey in recverParamsArray)
-                {
-                    id value = params[paramKey];
-                    if ([paramKey isEqualToString:@"finish"])
-                    {
-                        [invocation setArgument:&finish atIndex:i];
-                    }
-                    else
-                    {
-                        [invocation setArgument:&value atIndex:i];
-                    }
-                    i ++;
-                }
+                [invocation setArgument:&params atIndex:2];
+            }
+            else if (sig.numberOfArguments == 4)
+            {
+                [invocation setArgument:&params atIndex:2];
+                [invocation setArgument:&finish atIndex:3];
             }
             [invocation invoke];
         }
         else
         {
-            //模式2
-            NSString *modeMethod2 = nil;
+            //模式3
+            NSString *modeMethod3 = nil;
             for (NSString *methodName in classMethods)
             {
-                if ([methodName hasPrefix:methodMode2Prefix])
+                if ([methodName hasPrefix:methodMode3Prefix])
                 {
-                    modeMethod2 = methodName;
+                    modeMethod3 = methodName;
                     break;
                 }
             }
-            if (modeMethod2)
+            if (modeMethod3)
             {
-                SEL modeSelector = NSSelectorFromString(modeMethod2);
+                NSString *paramString = nil;
+                NSString *urlString = url.absoluteString;
+                NSUInteger firstQuestionMark = [urlString rangeOfString:@"?"].location;
+                if (firstQuestionMark != NSNotFound)
+                {
+                    paramString = [urlString substringFromIndex:firstQuestionMark + 1];
+                }
+                SEL modeSelector = NSSelectorFromString(modeMethod3);
                 NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
                 NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
                 [invocation setTarget:klass];
                 [invocation setSelector:modeSelector];
                 if (sig.numberOfArguments == 3)
                 {
-                    [invocation setArgument:&params atIndex:2];
+                    [invocation setArgument:&paramString atIndex:2];
                 }
                 else if (sig.numberOfArguments == 4)
                 {
-                    [invocation setArgument:&params atIndex:2];
+                    [invocation setArgument:&paramString atIndex:2];
                     [invocation setArgument:&finish atIndex:3];
                 }
                 [invocation invoke];
             }
             else
             {
-                //模式3
-                NSString *modeMethod3 = nil;
-                for (NSString *methodName in classMethods)
+                //模式4
+                SEL modeSelector = NSSelectorFromString(@"hgoto");
+                SEL modeSelectorWithFinish = NSSelectorFromString(@"hgotoWithFinish:");
+                if ([klass respondsToSelector:modeSelector])
                 {
-                    if ([methodName hasPrefix:methodMode3Prefix])
-                    {
-                        modeMethod3 = methodName;
-                        break;
-                    }
-                }
-                if (modeMethod3)
-                {
-                    NSString *paramString = nil;
-                    NSString *urlString = url.absoluteString;
-                    NSUInteger firstQuestionMark = [urlString rangeOfString:@"?"].location;
-                    if (firstQuestionMark != NSNotFound)
-                    {
-                        paramString = [urlString substringFromIndex:firstQuestionMark + 1];
-                    }
-                    SEL modeSelector = NSSelectorFromString(modeMethod3);
                     NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
                     NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
                     [invocation setTarget:klass];
                     [invocation setSelector:modeSelector];
-                    if (sig.numberOfArguments == 3)
-                    {
-                        [invocation setArgument:&paramString atIndex:2];
-                    }
-                    else if (sig.numberOfArguments == 4)
-                    {
-                        [invocation setArgument:&paramString atIndex:2];
-                        [invocation setArgument:&finish atIndex:3];
-                    }
                     [invocation invoke];
                 }
-                else
+                else if ([klass respondsToSelector:modeSelectorWithFinish])
                 {
-                    //模式4
-                    SEL modeSelector = NSSelectorFromString(@"hgoto");
-                    SEL modeSelectorWithFinish = NSSelectorFromString(@"hgotoWithFinish:");
-                    if ([klass respondsToSelector:modeSelector])
-                    {
-                        NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
-                        NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
-                        [invocation setTarget:klass];
-                        [invocation setSelector:modeSelector];
-                        [invocation invoke];
-                    }
-                    else if ([klass respondsToSelector:modeSelectorWithFinish])
-                    {
-                        NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelectorWithFinish];
-                        NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
-                        [invocation setTarget:klass];
-                        [invocation setSelector:modeSelectorWithFinish];
-                        [invocation setArgument:&finish atIndex:2];
-                        [invocation invoke];
-                    }
+                    NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelectorWithFinish];
+                    NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
+                    [invocation setTarget:klass];
+                    [invocation setSelector:modeSelectorWithFinish];
+                    [invocation setArgument:&finish atIndex:2];
+                    [invocation invoke];
                 }
             }
-        }
-    }
-    else
-    {
-        //模式4
-        SEL modeSelector = NSSelectorFromString(@"hgoto");
-        SEL modeSelectorWithFinish = NSSelectorFromString(@"hgotoWithFinish:");
-        if ([klass respondsToSelector:modeSelector])
-        {
-            NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
-            NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
-            [invocation setTarget:klass];
-            [invocation setSelector:modeSelector];
-            [invocation invoke];
-        }
-        else if ([klass respondsToSelector:modeSelectorWithFinish])
-        {
-            NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelectorWithFinish];
-            NSInvocation * invocation = [NSInvocation invocationWithMethodSignature:sig];
-            [invocation setTarget:klass];
-            [invocation setSelector:modeSelectorWithFinish];
-            [invocation setArgument:&finish atIndex:2];
-            [invocation invoke];
         }
     }
     [self.pasteboard removeAllObjects];
