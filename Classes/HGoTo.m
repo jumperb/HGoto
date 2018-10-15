@@ -122,10 +122,120 @@
         return nil;
     }
     
-    //应用选项
-    self.autoRoutedVC = [self applyOptions:options doJump:doJump targetClass:klass params:params];
-    
-    
+    //是vc且自动跳转
+    if ([klass isSubclassOfClass:[UIViewController class]] && ![options containsObject:HGotoOpt_ManualRoute])
+    {
+        BOOL needPopAction = NO;
+        UIViewController *tvc = nil;
+        //处理autopop
+        if ([options containsObject:HGOtoOpt_AutoPop])
+        {
+            NSArray *vcs = self.config.navi.viewControllers;
+            BOOL found = NO;
+            for (UIViewController *vc in vcs)
+            {
+                if ([vc isKindOfClass:klass])
+                {
+                    found = YES;
+                    tvc = vc;
+                    needPopAction = YES;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                tvc = [klass new];
+            }
+        }
+        else
+        {
+            tvc = [klass new];
+        }
+        self.autoRoutedVC = tvc;
+        
+        //处理autofill
+        if ([options containsObject:HGOtoOpt_AutoFill])
+        {
+            NSDictionary *keyMaping = [self getOptKeyMap:options];
+            NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:self.autoRoutedVC.class isDepSearch:YES];
+            for (HGOTOPropertyDetail *ppDetail in pplist)
+            {
+                NSString *mappedKey = nil;
+                if (keyMaping) mappedKey = keyMaping[ppDetail.name];
+                if (!mappedKey) mappedKey = ppDetail.name;
+                
+                id value = [params valueForKeyPath:mappedKey];
+                if (value)
+                {
+                    if ([value isKindOfClass:[NSNull class]])
+                    {
+                        continue;
+                    }
+                    else if ([value isKindOfClass:[NSString class]])
+                    {
+                        
+                        if ([ppDetail.typeString isEqualToString:NSStringFromClass([NSString class])] || [ppDetail.typeString isEqualToString:NSStringFromClass([NSMutableString class])])
+                        {
+                            [self.autoRoutedVC setValue:[value stringValue] forKey:ppDetail.name];
+                        }
+                        else if (!ppDetail.isObj)
+                        {
+                            //基本类型
+                            NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                            NSNumber *valueNum = [formatter numberFromString:value];
+                            //if cannot convert value to number , set to 0 by defaylt
+                            if (!valueNum) valueNum = @(0);
+                            [self.autoRoutedVC setValue:valueNum forKey:ppDetail.name];
+                        }
+                        else if (ppDetail.isObj && [ppDetail.typeString isEqualToString:NSStringFromClass([NSNumber class])])
+                        {
+                            //NSNumber
+                            NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                            NSNumber *valueNum = [formatter numberFromString:value];
+                            //if cannot convert value to number , set to 0 by defaylt
+                            if (!valueNum) valueNum = @(0);
+                            [self.autoRoutedVC setValue:valueNum forKey:ppDetail.name];
+                        }
+                        else if (ppDetail.isObj && [ppDetail.typeString isEqualToString:NSStringFromClass([NSDate class])])
+                        {
+                            //NSDate
+                            double date = [value floatValue];
+                            [self.autoRoutedVC setValue:[NSDate dateWithTimeIntervalSince1970:date] forKey:ppDetail.name];
+                        }
+                    }
+                }
+            }
+        }
+        
+        id res = [self handleParamsWithURL:url class:klass params:params finish:finish];
+        UIViewController *targetVC = self.autoRoutedVC;
+        if ([res isKindOfClass:[UIViewController class]]) {
+            targetVC = res;
+        }
+        if (doJump)
+        {
+            if (needPopAction)
+            {
+                [self.config.navi popToViewController:targetVC animated:YES];
+            }
+            else
+            {
+                [self.config.navi pushViewController:targetVC animated:YES];
+            }
+        }
+        [self.pasteboard removeAllObjects];
+        self.autoRoutedVC = nil;
+        return targetVC;
+    }
+    else
+    {
+        id res = [self handleParamsWithURL:url class:klass params:params finish:finish];
+        [self.pasteboard removeAllObjects];
+        return res;
+    }
+}
+- (id)handleParamsWithURL:(NSURL *)url class:(Class)klass params:(NSDictionary *)params finish:(finish_callback)finish
+{
     //模式1 +[xxClass hgoto_p1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3 finish:(finish_callback)finish]
     //模式1 +[xxClass hgoto_P1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3]
     //模式2 +[xxClass hgotoWithParams:(NSDictionary *)paramMap finish:(finish_callback)finish]
@@ -135,11 +245,13 @@
     //模式4 +[xxClass hgotoWithFinish:(finish_callback)finish]
     //模式4 +[xxClass hgoto]
     
+    
+    void *res = nil;
     static NSString *methodMode1Prefix = @"hgoto_";
     static NSString *methodMode2Prefix = @"hgotoWithParams:";
     static NSString *methodMode3Prefix = @"hgoto:";
     
-
+    
     NSArray *classMethods = [NSObject hClassMethodNames:klass];
     //模式1
     NSString *modeMethod1 = nil;
@@ -186,6 +298,9 @@
             }
         }
         [invocation invoke];
+        if (strcmp(sig.methodReturnType, "@") == 0) {
+            [invocation getReturnValue:&res];
+        }
     }
     else
     {
@@ -216,6 +331,9 @@
                 [invocation setArgument:&finish atIndex:3];
             }
             [invocation invoke];
+            if (strcmp(sig.methodReturnType, "@") == 0) {
+                [invocation getReturnValue:&res];
+            }
         }
         else
         {
@@ -253,6 +371,9 @@
                     [invocation setArgument:&finish atIndex:3];
                 }
                 [invocation invoke];
+                if (strcmp(sig.methodReturnType, "@") == 0) {
+                    [invocation getReturnValue:&res];
+                }
             }
             else
             {
@@ -266,6 +387,9 @@
                     [invocation setTarget:klass];
                     [invocation setSelector:modeSelector];
                     [invocation invoke];
+                    if (strcmp(sig.methodReturnType, "@") == 0) {
+                        [invocation getReturnValue:&res];
+                    }
                 }
                 else if ([klass respondsToSelector:modeSelectorWithFinish])
                 {
@@ -275,16 +399,19 @@
                     [invocation setSelector:modeSelectorWithFinish];
                     [invocation setArgument:&finish atIndex:2];
                     [invocation invoke];
+                    if (strcmp(sig.methodReturnType, "@") == 0) {
+                        [invocation getReturnValue:&res];
+                    }
                 }
             }
         }
     }
-    [self.pasteboard removeAllObjects];
-    id res = self.autoRoutedVC;
-    self.autoRoutedVC = nil;
-    return res;
+    if (res) {
+        id bridgedObj = (__bridge id)res;
+        return bridgedObj;
+    }
+    else return nil;
 }
-
 + (void)route:(NSString *)path
 {
     [HGoto route:path finish:nil];
@@ -311,112 +438,7 @@
 {
     return [[HGoto center] route:path doJump:NO finish:nil];
 }
-- (id)applyOptions:(NSArray *)options doJump:(BOOL)doJump targetClass:(Class)klass params:(NSDictionary *)params
-{
-    if ([klass isSubclassOfClass:[UIViewController class]])
-    {
-        UIViewController *targetVC = nil;
-        BOOL needPopAction = NO;
-        if (![options containsObject:HGotoOpt_ManualRoute])
-        {
-            //处理autopop
-            if ([options containsObject:HGOtoOpt_AutoPop])
-            {
-                NSArray *vcs = self.config.navi.viewControllers;
-                BOOL found = NO;
-                for (UIViewController *vc in vcs)
-                {
-                    if ([vc isKindOfClass:klass])
-                    {
-                        found = YES;
-                        targetVC = vc;
-                        needPopAction = YES;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    targetVC = [klass new];
-                }
-            }
-            else
-            {
-                targetVC = [klass new];
-            }
-            
-            //处理autofill
-            if ([options containsObject:HGOtoOpt_AutoFill])
-            {
-                NSDictionary *keyMaping = [self getOptKeyMap:options];
-                NSArray<HGOTOPropertyDetail *> *pplist = [HGotoRuntimeSupport entityPropertyDetailList:targetVC.class isDepSearch:YES];
-                for (HGOTOPropertyDetail *ppDetail in pplist)
-                {
-                    NSString *mappedKey = nil;
-                    if (keyMaping) mappedKey = keyMaping[ppDetail.name];
-                    if (!mappedKey) mappedKey = ppDetail.name;
-                    
-                    id value = [params valueForKeyPath:mappedKey];
-                    if (value)
-                    {
-                        if ([value isKindOfClass:[NSNull class]])
-                        {
-                            continue;
-                        }
-                        else if ([value isKindOfClass:[NSString class]])
-                        {
-                            
-                            if ([ppDetail.typeString isEqualToString:NSStringFromClass([NSString class])] || [ppDetail.typeString isEqualToString:NSStringFromClass([NSMutableString class])])
-                            {
-                                [targetVC setValue:[value stringValue] forKey:ppDetail.name];
-                            }
-                            else if (!ppDetail.isObj)
-                            {
-                                //基本类型
-                                NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-                                NSNumber *valueNum = [formatter numberFromString:value];
-                                //if cannot convert value to number , set to 0 by defaylt
-                                if (!valueNum) valueNum = @(0);
-                                [targetVC setValue:valueNum forKey:ppDetail.name];
-                            }
-                            else if (ppDetail.isObj && [ppDetail.typeString isEqualToString:NSStringFromClass([NSNumber class])])
-                            {
-                                //NSNumber
-                                NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-                                NSNumber *valueNum = [formatter numberFromString:value];
-                                //if cannot convert value to number , set to 0 by defaylt
-                                if (!valueNum) valueNum = @(0);
-                                [targetVC setValue:valueNum forKey:ppDetail.name];
-                            }
-                            else if (ppDetail.isObj && [ppDetail.typeString isEqualToString:NSStringFromClass([NSDate class])])
-                            {
-                                //NSDate
-                                double date = [value floatValue];
-                                [targetVC setValue:[NSDate dateWithTimeIntervalSince1970:date] forKey:ppDetail.name];
-                            }
-                        }
-                    }
-                }
-                
-            }
-            if (doJump)
-            {
-                if (needPopAction)
-                {
-                    [self.config.navi popToViewController:targetVC animated:YES];
-                }
-                else
-                {
-                    [self.config.navi pushViewController:targetVC animated:YES];
-                }
-            }
-        }
-        return targetVC;
-    }
-    else
-    {
-        return nil;
-    }
-}
+
 - (NSDictionary *)getOptKeyMap:(NSArray *)options
 {
     for (id obj in options)

@@ -17,7 +17,7 @@ HGotoReg2(@"c1",HGotoOpt_ManualRoute)
     [super viewDidLoad];
     self.title = @"C1";
 }
-+ (void)hgoto_pa:(NSString *)pa
++ (id)hgoto_pa:(NSString *)pa
 {
     CATransition *transition = [CATransition animation];
     transition.type = kCATransitionMoveIn;
@@ -25,7 +25,9 @@ HGotoReg2(@"c1",HGotoOpt_ManualRoute)
     transition.duration = 0.3;
     [transition setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
     [[UIApplication navi].view.layer addAnimation:transition forKey:kCATransition];
-    [[UIApplication navi] pushViewController:[CViewController1 new] animated:NO];
+    UIViewController *vc = [CViewController1 new];
+    [[UIApplication navi] pushViewController:vc animated:NO];
+    return vc;
 }
 @end
 
