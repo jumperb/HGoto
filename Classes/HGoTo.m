@@ -436,7 +436,9 @@
 }
 + (UIViewController *)getViewController:(NSString *)path
 {
-    return [[HGoto center] route:path doJump:NO finish:nil];
+    id res = [[HGoto center] route:path doJump:NO finish:nil];
+    if (![res isKindOfClass:[UIViewController class]]) res = nil;
+    return res;
 }
 
 - (NSDictionary *)getOptKeyMap:(NSArray *)options
