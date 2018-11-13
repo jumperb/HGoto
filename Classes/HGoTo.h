@@ -35,7 +35,7 @@
 
 #define HGotoKeyword_Next @"next"
 #define HGotoPreStepDataKey @"HGotoPreStepDataKey"
-
+#define HGotoRouteKey @"routeKey"
 //模式1 + (void)hgoto_p1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3 finish:(finish_callback)finish
 //模式1 + (void)hgoto_P1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3
 //模式2 + (void)hgotoWithParams:(NSDictionary *)paramMap finish:(finish_callback)finish

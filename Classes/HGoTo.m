@@ -101,6 +101,11 @@
     NSString *nodeRegName = [NSString stringWithFormat:@"%@_%@",HGOTO_NODE_REG_PREFIX,nodeName];
     __block NSString *className = nil;
     __block NSArray *options = nil;
+    
+    NSMutableDictionary *newParams = [NSMutableDictionary dictionaryWithDictionary:params];
+    newParams[HGotoRouteKey] = nodeName;
+    params = newParams;
+    
     [HClassManager scanClassNameForKey:nodeRegName fetchblock:^(NSString *aclassName, id userInfo) {
         NSAssert(className == nil, @"存在多个路径注册点");
         className = aclassName;
