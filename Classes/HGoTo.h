@@ -51,6 +51,7 @@
 @property (nonatomic, readonly) UINavigationController *navi;
 @optional
 - (void)openHttpURL:(NSString *)httpURL;
+- (void)cannotRoute:(NSString *)path error:(NSError *)error;
 @end
 
 @interface HGoto : NSObject

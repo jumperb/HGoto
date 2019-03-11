@@ -49,7 +49,12 @@
 - (id)route:(NSString *)path doJump:(BOOL)doJump finish:(finish_callback)finish
 {
     NSURL *url = [NSURL URLWithString:path];
-    if (!url) return nil;
+    if (!url) {
+        if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
+            [self.config cannotRoute:url.absoluteString error:herr(kDataFormatErrorCode, @"路径为空")];
+        }
+        return nil;
+    }
     NSString *schema = url.scheme.lowercaseString;
     if ([schema isEqualToString:@"http"] || [schema isEqualToString:@"https"])
     {
@@ -85,9 +90,12 @@
     }
     else
     {
+        if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
+            [self.config cannotRoute:url.absoluteString error:herr(kDataFormatErrorCode, @"不支持的schema")];
+        }
         if (finish)
         {
-            finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"wrong protocal only support %@",self.config.appSchema])));
+            finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"不支持的schema %@",self.config.appSchema])));
         }
         return nil;
     }
@@ -114,7 +122,11 @@
     if (!className)
     {
         NSAssert(NO, @"没找到对应的注册路径点");
-        if (finish) finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"没找到对应的注册路径点 %@",nodeName])));
+        NSError *err = herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"没找到对应的注册路径点 %@",nodeName]));
+        if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
+            [self.config cannotRoute:url.absoluteString error:err];
+        }
+        if (finish) finish(self, nil, err);
         return nil;
     }
     
@@ -123,7 +135,11 @@
     if (!klass)
     {
         NSAssert(NO, @"无法初始化类");
-        if (finish) finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"无法初始化类 %@", className])));
+        NSError *err = herr(kInnerErrorCode, ([NSString stringWithFormat:@"无法初始化类 %@", className]));
+        if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
+            [self.config cannotRoute:url.absoluteString error:err];
+        }
+        if (finish) finish(self, nil, err);
         return nil;
     }
     
