@@ -14,9 +14,9 @@
 
 #define HGOTO_NODE_REG_PREFIX @"HGOTO_NODE_REG_PREFIX"
 
-#define HGotoReg(key) HReg(@"HGOTO_NODE_REG_PREFIX_"key) //路由节点注册
-#define HGotoReg2(key, ...) HReg2(@"HGOTO_NODE_REG_PREFIX_"key, (@[__VA_ARGS__])) //路由节点注册，带选项
-#define HGotoRegInfo(key,...) HRegInfo(@"HGOTO_NODE_REG_PREFIX_"key, (@[__VA_ARGS__]))  //路由信息字典
+#define HGotoReg(key) HReg(@"HGOTO_NODE_REG_PREFIX_" key) //路由节点注册
+#define HGotoReg2(key, ...) HReg2(@"HGOTO_NODE_REG_PREFIX_" key, (@[__VA_ARGS__])) //路由节点注册，带选项
+#define HGotoRegInfo(key,...) HRegInfo(@"HGOTO_NODE_REG_PREFIX_" key, (@[__VA_ARGS__]))  //路由信息字典
 
 //以下是路由选项
 
