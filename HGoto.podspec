@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "HGoto"
-  s.version      = "1.2.5"
+  s.version      = "1.2.6"
   s.summary      = "A short description of HGoto."
 
   s.description  = <<-DESC
