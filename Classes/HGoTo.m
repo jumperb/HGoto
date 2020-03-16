@@ -90,12 +90,15 @@
     }
     else
     {
-        if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
-            [self.config cannotRoute:url.absoluteString error:herr(kDataFormatErrorCode, @"不支持的schema")];
-        }
-        if (finish)
-        {
-            finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"不支持的schema %@",self.config.appSchema])));
+        BOOL res = [[UIApplication sharedApplication] openURL:url];
+        if (!res) {
+            if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
+                [self.config cannotRoute:url.absoluteString error:herr(kDataFormatErrorCode, @"路由失败")];
+            }
+            if (finish)
+            {
+                finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"路由失败 %@",self.config.appSchema])));
+            }
         }
         return nil;
     }
