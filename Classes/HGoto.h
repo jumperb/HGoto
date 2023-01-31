@@ -1,13 +1,13 @@
 //
-//  HGoToSupport.h
+//  HGotoSupport.h
 //  Camera360
 //
 //  Created by zhangchutian on 14-4-4.
 //  Copyright (c) 2014年 Pinguo. All rights reserved.
 //
 
-#ifndef HGoto_HGoToSupport_h
-#define HGoto_HGoToSupport_h
+#ifndef HGoto_HGotoSupport_h
+#define HGoto_HGotoSupport_h
 
 #import <Hodor/HClassManager.h>
 #import <Hodor/HCommonBlock.h>

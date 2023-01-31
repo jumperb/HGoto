@@ -8,7 +8,7 @@
 
 #import "BViewController.h"
 #import "CViewController.h"
-#import "HGoTo.h"
+#import "HGoto.h"
 #import <HCommon.h>
 
 @implementation BViewController

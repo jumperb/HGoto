@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "HGoTo.h"
+#import "HGoto.h"
 
 @interface HGotoConfigIMP : NSObject <HGotoConfig>
 @end

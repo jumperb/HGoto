@@ -1,5 +1,5 @@
 //
-//  HGoToApp.h
+//  HGotoApp.h
 //  Camera360
 //
 //  Created by zhangchutian on 14-6-20.
@@ -16,6 +16,6 @@
  *
  *  支持参数 url=xxx&schema=xxx
  */
-@interface HGoToApp : NSObject
+@interface HGotoApp : NSObject
 + (void)hgoto_schema:(NSString *)schema url:(NSString *)url;
 @end

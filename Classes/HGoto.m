@@ -1,12 +1,12 @@
 //
-//  HGoToSupport.m
+//  HGotoSupport.m
 //  Camera360
 //
 //  Created by zhangchutian on 14-4-3.
 //  Copyright (c) 2014年 Pinguo. All rights reserved.
 //
 
-#import "HGoTo.h"
+#import "HGoto.h"
 #import <Hodor/NSObject+annotation.h>
 #import "HGotoRuntimeSupport.h"
 #import <Hodor/NSString+ext.h>

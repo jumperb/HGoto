@@ -1,22 +1,22 @@
 //
-//  HGoToApp.m
+//  HGotoApp.m
 //  Camera360
 //
 //  Created by zhangchutian on 14-6-20.
 //  Copyright (c) 2014年 Pinguo. All rights reserved.
 //
 
-#import "HGoToApp.h"
-#import "HGoTo.h"
+#import "HGotoApp.h"
+#import "HGoto.h"
 #import <Hodor/NSString+ext.h>
 
-@interface HGoToApp () <SKStoreProductViewControllerDelegate>
+@interface HGotoApp () <SKStoreProductViewControllerDelegate>
 
 @property (nonatomic) id mHolder;
 @property (nonatomic, weak) SKStoreProductViewController *mSkStoreProductViewController;
 @end
 
-@implementation HGoToApp
+@implementation HGotoApp
 
 HGotoReg(@"app")
 
