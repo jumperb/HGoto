@@ -11,6 +11,7 @@
 
 #import <Hodor/HClassManager.h>
 #import <Hodor/HCommonBlock.h>
+#import <UIKit/UIKit.h>
 
 #define HGOTO_NODE_REG_PREFIX @"HGOTO_NODE_REG_PREFIX"
 
