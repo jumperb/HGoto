@@ -12,9 +12,9 @@
 @implementation HGotoConfigIMP
 HRegForProtocal(HGotoConfig)
 
-- (NSString *)appSchema
+- (NSArray *)appSchemas
 {
-    return @"HGoto://";
+    return @[@"HGoto://"];
 }
 - (UINavigationController *)navi
 {

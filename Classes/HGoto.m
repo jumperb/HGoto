@@ -45,7 +45,14 @@
     }
     return self;
 }
-
+- (BOOL)containSchema:(NSString *)schema {
+    for (NSString *s in self.config.appSchemas) {
+        if ([s.lowercaseString isEqual:schema.lowercaseString]) {
+            return YES;
+        }
+    }
+    return NO;
+}
 - (id)route:(NSString *)path doJump:(BOOL)doJump finish:(finish_callback)finish
 {
     NSURL *url = [NSURL URLWithString:path];
@@ -64,7 +71,7 @@
         }
         return nil;
     }
-    else if ([schema isEqualToString:self.config.appSchema] || [[schema stringByAppendingString:@"://"] isEqualToString:self.config.appSchema.lowercaseString]) {
+    else if ([self containSchema:schema] || [self containSchema:[schema stringByAppendingString:@"://"]]) {
         NSDictionary *params = [url parameterMap];
         @weakify(self)
         return [self routeWithURL:url params:params doJump:doJump finish:^(id sender, id data, NSError *error) {
@@ -97,7 +104,7 @@
             }
             if (finish)
             {
-                finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"路由失败 %@",self.config.appSchema])));
+                finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"路由失败 %@",path])));
             }
         }
         return nil;

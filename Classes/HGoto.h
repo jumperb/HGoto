@@ -48,7 +48,7 @@
 
 
 @protocol HGotoConfig <NSObject>
-@property (nonatomic, readonly) NSString *appSchema;
+@property (nonatomic, readonly) NSArray<NSString*> *appSchemas;
 @property (nonatomic, readonly) UINavigationController *navi;
 @optional
 - (void)openHttpURL:(NSString *)httpURL;
