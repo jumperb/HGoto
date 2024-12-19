@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name = "HGoto"
-  s.version = "1.3.3"
+  s.version = "1.3.4"
   s.summary = "A short description of HGoto."
 
   s.description = <<-DESC
@@ -25,6 +25,6 @@ Pod::Spec.new do |s|
   s.dependency 'Hodor/Defines'
   s.requires_arc = true
   
-  s.ios.deployment_target = '7.0'
+  s.ios.deployment_target = '11.0'
   
 end

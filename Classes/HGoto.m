@@ -53,26 +53,64 @@
     }
     return NO;
 }
-- (id)route:(NSString *)path doJump:(BOOL)doJump finish:(finish_callback)finish
+- (NSString *)urlScheme:(NSString *)url {
+    NSInteger loc = [url rangeOfString:@"://"].location;
+    if (loc == NSNotFound) return nil;
+    return [url substringToIndex:loc];
+}
+- (NSString *)urlHostAndPath:(NSString *)url {
+    NSInteger loc1 = [url rangeOfString:@"://"].location;
+    if (loc1 == NSNotFound) {
+        loc1 = 0;
+    }
+    else {
+        loc1 += 3;
+    }
+    NSInteger loc2 = [url rangeOfString:@"?" options:0 range:NSMakeRange(loc1, url.length - loc1)].location;
+    if (loc2 == NSNotFound) {
+        loc2 = url.length;
+    }
+    return [url substringWithRange:NSMakeRange(loc1, loc2 - loc1)];
+}
+- (NSDictionary *)urlParameterMap:(NSString *)url
 {
-    NSURL *url = [NSURL URLWithString:path];
+    NSMutableDictionary *dict = [NSMutableDictionary new];
+    NSInteger loc = [url rangeOfString:@"?"].location;
+    if (loc == NSNotFound) return dict;
+    if (loc + 1 >= url.length - 1) return dict;
+    NSString *query = [url substringFromIndex:loc + 1];
+    NSArray *segments = [query componentsSeparatedByString:@"&"];
+    for(NSString *segment in segments)
+    {
+        NSArray *kv = [segment componentsSeparatedByString:@"="];
+        if (kv.count >= 2)
+        {
+            NSString *key = [kv[0] decode];
+            NSString *value = [kv[1] decode];
+            [dict setObject:value forKey:key];
+        }
+    }
+    return dict;
+}
+- (id)route:(NSString *)url doJump:(BOOL)doJump finish:(finish_callback)finish
+{
     if (!url) {
         if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
-            [self.config cannotRoute:url.absoluteString error:herr(kDataFormatErrorCode, @"路径为空")];
+            [self.config cannotRoute:url error:herr(kDataFormatErrorCode, @"路径为空")];
         }
         return nil;
     }
-    NSString *schema = url.scheme.lowercaseString;
+    NSString *schema = [self urlScheme:url].lowercaseString;
     if ([schema isEqualToString:@"http"] || [schema isEqualToString:@"https"])
     {
         if ([self.config respondsToSelector:@selector(openHttpURL:)])
         {
-            [self.config openHttpURL:path];
+            [self.config openHttpURL:url];
         }
         return nil;
     }
     else if ([self containSchema:schema] || [self containSchema:[schema stringByAppendingString:@"://"]]) {
-        NSDictionary *params = [url parameterMap];
+        NSDictionary *params = [self urlParameterMap:url];
         @weakify(self)
         return [self routeWithURL:url params:params doJump:doJump finish:^(id sender, id data, NSError *error) {
             @strongify(self)
@@ -97,25 +135,24 @@
     }
     else
     {
-        BOOL res = [[UIApplication sharedApplication] openURL:url];
+        BOOL res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
         if (!res) {
             if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
-                [self.config cannotRoute:url.absoluteString error:herr(kDataFormatErrorCode, @"路由失败")];
+                [self.config cannotRoute:url error:herr(kDataFormatErrorCode, @"路由失败")];
             }
             if (finish)
             {
-                finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"路由失败 %@",path])));
+                finish(self, nil, herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"路由失败 %@",url])));
             }
         }
         return nil;
     }
     
 }
-- (id)routeWithURL:(NSURL *)url params:(NSDictionary *)params doJump:(BOOL)doJump finish:(finish_callback)finish
+- (id)routeWithURL:(NSString *)url params:(NSDictionary *)params doJump:(BOOL)doJump finish:(finish_callback)finish
 {
     //搜索全局节点
-    NSString *nodeName = url.host;
-    if (url.path) nodeName = [nodeName stringByAppendingString:url.path];
+    NSString *nodeName = [self urlHostAndPath:url];
     NSString *nodeRegName = [NSString stringWithFormat:@"%@_%@",HGOTO_NODE_REG_PREFIX,nodeName];
     __block NSString *className = nil;
     __block NSArray *options = nil;
@@ -134,7 +171,7 @@
         NSAssert(NO, @"没找到对应的注册路径点");
         NSError *err = herr(kDataFormatErrorCode, ([NSString stringWithFormat:@"没找到对应的注册路径点 %@",nodeName]));
         if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
-            [self.config cannotRoute:url.absoluteString error:err];
+            [self.config cannotRoute:url error:err];
         }
         if (finish) finish(self, nil, err);
         return nil;
@@ -147,7 +184,7 @@
         NSAssert(NO, @"无法初始化类");
         NSError *err = herr(kInnerErrorCode, ([NSString stringWithFormat:@"无法初始化类 %@", className]));
         if ([self.config respondsToSelector:@selector(cannotRoute:error:)]) {
-            [self.config cannotRoute:url.absoluteString error:err];
+            [self.config cannotRoute:url error:err];
         }
         if (finish) finish(self, nil, err);
         return nil;
@@ -265,7 +302,7 @@
         return res;
     }
 }
-- (id)handleParamsWithURL:(NSURL *)url class:(Class)klass params:(NSDictionary *)params finish:(finish_callback)finish
+- (id)handleParamsWithURL:(NSString *)url class:(Class)klass params:(NSDictionary *)params finish:(finish_callback)finish
 {
     //模式1 +[xxClass hgoto_p1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3 finish:(finish_callback)finish]
     //模式1 +[xxClass hgoto_P1:(NSString *)p1 p2:(NSString *)p2 p3:(NSString *)p3]
@@ -381,11 +418,10 @@
             if (modeMethod3)
             {
                 NSString *paramString = nil;
-                NSString *urlString = url.absoluteString;
-                NSUInteger firstQuestionMark = [urlString rangeOfString:@"?"].location;
+                NSUInteger firstQuestionMark = [url rangeOfString:@"?"].location;
                 if (firstQuestionMark != NSNotFound)
                 {
-                    paramString = [urlString substringFromIndex:firstQuestionMark + 1];
+                    paramString = [url substringFromIndex:firstQuestionMark + 1];
                 }
                 SEL modeSelector = NSSelectorFromString(modeMethod3);
                 NSMethodSignature * sig = [klass methodSignatureForSelector:modeSelector];
@@ -443,14 +479,14 @@
     }
     else return nil;
 }
-+ (void)route:(NSString *)path
++ (void)route:(NSString *)url
 {
-    [HGoto route:path finish:nil];
+    [HGoto route:url finish:nil];
 }
 
-+ (void)route:(NSString *)path success:(callback)success faile:(fail_callback)faile
++ (void)route:(NSString *)url success:(callback)success faile:(fail_callback)faile
 {
-    [[HGoto center] route:path doJump:YES finish:^(id sender, id data, NSError *error) {
+    [[HGoto center] route:url doJump:YES finish:^(id sender, id data, NSError *error) {
         if (error)
         {
             if (faile) faile(sender, error);
@@ -461,9 +497,9 @@
         }
     }];
 }
-+ (void)route:(NSString *)path finish:(finish_callback)finish
++ (void)route:(NSString *)url finish:(finish_callback)finish
 {
-    [[HGoto center] route:path doJump:YES finish:finish];
+    [[HGoto center] route:url doJump:YES finish:finish];
 }
 + (UIViewController *)getViewController:(NSString *)path
 {

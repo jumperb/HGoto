@@ -52,18 +52,18 @@
 @property (nonatomic, readonly) UINavigationController *navi;
 @optional
 - (void)openHttpURL:(NSString *)httpURL;
-- (void)cannotRoute:(NSString *)path error:(NSError *)error;
+- (void)cannotRoute:(NSString *)url error:(NSError *)error;
 @end
 
 @interface HGoto : NSObject
 @property (nonatomic, readonly) id<HGotoConfig> config;
 
 //普通跳转
-+ (void)route:(NSString *)path;
++ (void)route:(NSString *)url;
 //普通跳转+回调
-+ (void)route:(NSString *)path finish:(finish_callback)finish;
++ (void)route:(NSString *)url finish:(finish_callback)finish;
 //普通跳转+回调
-+ (void)route:(NSString *)path success:(callback)success faile:(fail_callback)faile;
++ (void)route:(NSString *)url success:(callback)success faile:(fail_callback)faile;
 //只取到VC不进行跳转，自动参数的话参数已经填好
 + (UIViewController *)getViewController:(NSString *)path;
 
